@@ -225,7 +225,7 @@ def masked_image(predictions, original_image, label_id_to_names, fade_weight=0.8
         #print(color)
         #top_left, bottom_right = box[:2].tolist(), box[2:].tolist()
         #visualized_image = cv2.rectangle(visualized_image, tuple(top_left), tuple(bottom_right), tuple(color), 1)
-    return (visualized_image, edge.astype('uint8'), thresh)
+    return (visualized_image, edge.astype('uint8'))
 
 
 def seg_image(predictions, original_image, colormap, fade_weight=0.5):
