@@ -136,7 +136,7 @@ def twotothree(x):
     z = np.concatenate((x.reshape(1024, 2048, 1),x.reshape(1024, 2048, 1),x.reshape(1024, 2048, 1)),axis=2)
     return z
 def sigmoid(x):
-    z = 1/(1 + np.exp(x)) 
+    z = 1/(1 + np.exp(-x)) 
     return z
 def getBordered(image, width):
     bg = np.zeros(image.shape)
