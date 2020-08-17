@@ -123,7 +123,7 @@ class RTPanoNet(torch.nn.Module):
         semantic_logits, box_cls, box_regression, centerness, levelness_logits = self.panoptic_head(list(features.values()))
 
         # Get full size semantic logits.
-        downsampled_level = images.tensors[0].shape[-1] // semantic_logits.shape[-1]
+        downsampled_level = math.ceil(images.tensors[0].shape[-1] / semantic_logits.shape[-1])
         interpolated_semantic_logits_padded = F.interpolate(semantic_logits, scale_factor=downsampled_level, mode='bilinear')
         interpolated_semantic_logits = interpolated_semantic_logits_padded[:,:,:images.tensors[0].shape[-2], :images.tensors[0].shape[-1]]
         # Calculate levelness locations.
