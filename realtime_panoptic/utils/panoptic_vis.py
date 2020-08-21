@@ -133,7 +133,7 @@ def draw_mask(im, mask, alpha=0.5, color=None):
     return im, color.tolist()
 
 def twotothree(x):
-    z = np.concatenate((x.reshape(480, 640, 1),x.reshape(480, 640, 1),x.reshape(480, 640, 1)),axis=2)
+    z = np.concatenate((x.reshape(x.shape[0], x.shape[1], 1),x.reshape(x.shape[0], x.shape[1], 1),x.reshape(x.shape[0], x.shape[1], 1)),axis=2)
     return z
 def sigmoid(x):
     z = 1/(1 + np.exp(-x)) 
