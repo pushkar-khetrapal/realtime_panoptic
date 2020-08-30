@@ -1,10 +1,10 @@
 # ----------------------------------------------- Base Docker Image -----------------------------------------------
-FROM nvidia/cuda:10.0-devel-ubuntu18.04
+FROM nvidia/cuda:10.1-devel-ubuntu18.04
 
-ENV PYTORCH_VERSION=1.1.0
-ENV TORCHVISION_VERSION=0.3.0
-ENV CUDNN_VERSION=7.6.0.64-1+cuda10.0
-ENV NCCL_VERSION=2.4.7-1+cuda10.0
+ENV PYTORCH_VERSION=1.6.0
+ENV TORCHVISION_VERSION=0.7.0
+ENV CUDNN_VERSION=7.6.0.64-1+cuda11.0
+ENV NCCL_VERSION=2.4.7-1+cuda11.0
 
 # Workaround for deadlock issue. To be removed with next major Pytorch release
 ENV NCCL_LL_THRESHOLD=0
@@ -41,8 +41,20 @@ RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-
     libgtk2.0-dev \
     unzip \
     bzip2 \
-    htop
+    htop  \
+    libsm6 \
+    libxext6 \
+    libxrender-dev
 
+RUN dpkg -i 'home/ec2-user/SageMaker/nv-tensorrt-repo-ubuntu1804-cuda11.0-trt7.1.3.4-ga-20200617_1-1_amd64.deb' \
+RUN apt-key add /var/nv-tensorrt-repo-cudax.x-trt7.x.x.x-gayyyymmdd/7fa2af80.pub
+RUN apt-get update
+RUN apt-get install tensorrt
+RUN apt-get install python3-libnvinfer
+
+
+ENV version=7.0.0-1+cuda10.0
+sudo apt-get install libnvinfer7=${version} libnvonnxparsers7=${version} libnvparsers7=${version} libnvinfer-plugin7=${version} libnvinfer-dev=${version} libnvonnxparsers-dev=${version} libnvparsers-dev=${version} libnvinfer-plugin-dev=${version} python-libnvinfer=${version} python3-libnvinfer=${version}
 
 # Instal Python and pip
 RUN if [[ "${PYTHON_VERSION}" == "3.6" ]]; then \
