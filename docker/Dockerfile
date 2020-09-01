@@ -1,10 +1,10 @@
 # ----------------------------------------------- Base Docker Image -----------------------------------------------
-FROM nvidia/cuda:10.1-devel-ubuntu18.04
+FROM nvidia/cuda:10.0-devel-ubuntu18.04
 
-ENV PYTORCH_VERSION=1.6.0
-ENV TORCHVISION_VERSION=0.7.0
-ENV CUDNN_VERSION=7.6.0.64-1+cuda11.0
-ENV NCCL_VERSION=2.4.7-1+cuda11.0
+ENV PYTORCH_VERSION=1.4.0
+ENV TORCHVISION_VERSION=0.5.0
+ENV CUDNN_VERSION=7.6.0.64-1+cuda10.0
+ENV NCCL_VERSION=2.4.7-1+cuda10.0
 
 # Workaround for deadlock issue. To be removed with next major Pytorch release
 ENV NCCL_LL_THRESHOLD=0
@@ -46,16 +46,6 @@ RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-
     libxext6 \
     libxrender-dev
 
-RUN dpkg -i 'home/ec2-user/SageMaker/nv-tensorrt-repo-ubuntu1804-cuda11.0-trt7.1.3.4-ga-20200617_1-1_amd64.deb' \
-RUN apt-key add /var/nv-tensorrt-repo-cudax.x-trt7.x.x.x-gayyyymmdd/7fa2af80.pub
-RUN apt-get update
-RUN apt-get install tensorrt
-RUN apt-get install python3-libnvinfer
-
-
-ENV version=7.0.0-1+cuda10.0
-sudo apt-get install libnvinfer7=${version} libnvonnxparsers7=${version} libnvparsers7=${version} libnvinfer-plugin7=${version} libnvinfer-dev=${version} libnvonnxparsers-dev=${version} libnvparsers-dev=${version} libnvinfer-plugin-dev=${version} python-libnvinfer=${version} python3-libnvinfer=${version}
-
 # Instal Python and pip
 RUN if [[ "${PYTHON_VERSION}" == "3.6" ]]; then \
     apt-get install -y python${PYTHON_VERSION}-distutils; \
@@ -89,7 +79,29 @@ WORKDIR /workspace/apex
 RUN git checkout 82dac9c9419035110d1ccc49b2608681337903ed
 RUN pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
 
+RUN wget -o 'nv-tensorrt-repo-ubuntu1804-cuda10.0-trt7.0.0.11-ga-20191216_1-1_amd64.deb' https://www.dropbox.com/s/afuvlpj4qiw3bn1/nv-tensorrt-repo-ubuntu1804-cuda10.0-trt7.0.0.11-ga-20191216_1-1_amd64.deb?dl=0
+RUN dpkg -i 'nv-tensorrt-repo-ubuntu1804-cuda10.0-trt7.0.0.11-ga-20191216_1-1_amd64.deb'
+RUN apt-key add /var/nv-tensorrt-repo-cudax.x-trt7.x.x.x-gayyyymmdd/7fa2af80.pub
+RUN apt-get update
+RUN apt-get install tensorrt
+RUN apt-get install python3-libnvinfer
+
+
+ENV version=7.0.0-1+cuda10.0
+RUN apt-get install libnvinfer7=${version} \
+    libnvonnxparsers7=${version} \
+    libnvparsers7=${version} \
+    libnvinfer-plugin7=${version} \
+    libnvinfer-dev=${version} \
+    libnvonnxparsers-dev=${version} \
+    libnvparsers-dev=${version} \
+    libnvinfer-plugin-dev=${version} \
+    python-libnvinfer=${version} \
+    python3-libnvinfer=${version}
+
 # Copy repo
 ENV PYTHONPATH="/workspace/panoptic:$PYTHONPATH"
 COPY . /workspace/panoptic
 WORKDIR /workspace/panoptic
+
+
